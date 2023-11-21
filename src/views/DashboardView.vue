@@ -13,7 +13,7 @@
         <div>Active Bids</div>
       </h2>
       <div class="my-auto text-center">
-        <h1 class="text-7xl text-primary cursor-pointer -mt-10" @click="toActiveBids">1</h1>
+        <h1 class="text-7xl text-primary cursor-pointer -mt-10" @click="toActiveBids">{{ userActiveBids.length || 0 }}</h1>
       </div>
     </div>
     <div class="card w-96 bg-base-100 shadow-xl m-5">
@@ -61,6 +61,7 @@ onMounted(() => {
   console.log('Component is mounted');
   store.dispatch('getCompanyContact');
   store.dispatch('getCompanies');
+  store.dispatch('getActiveBids');
 });
 
 const isLoading = computed(() => store.getters.loadingStatus)
@@ -68,6 +69,7 @@ const isLoading = computed(() => store.getters.loadingStatus)
 // we can put this into getters like getDashboardDetails
 const userCompanies = computed(() => store.state.companies);
 const userCompanyContact = computed(() => store.state.companyContact);
+const userActiveBids = computed(() => store.state.activeBids);
 
 const router = useRouter();
 
