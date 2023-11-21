@@ -23,7 +23,7 @@ const router = createRouter({
       },
     },
     {
-      path: '/quotations/:id',
+      path: '/quotations',
       name: 'quotations',
       component: QuotationsView,
       meta: {
@@ -31,7 +31,7 @@ const router = createRouter({
       },
     },
     {
-      path: '/technical-compliance/:id',
+      path: '/technical-compliance',
       name: 'technical-compliance',
       component: TechnicalComplianceView,
       meta: {
@@ -39,7 +39,7 @@ const router = createRouter({
       },
     },
     {
-      path: '/terms-and-conditions/:id',
+      path: '/terms-and-conditions',
       name: 'terms-and-conditions',
       component: TermsAndConditionsView,
       meta: {
@@ -47,7 +47,7 @@ const router = createRouter({
       },
     },
     {
-      path: '/final-review/:id',
+      path: '/final-review',
       name: 'final-review',
       component: FinalReviewView,
       meta: {

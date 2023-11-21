@@ -4,15 +4,20 @@
     
     <TitlePage>Change Password</TitlePage>
 
-    <form @submit="changePassword" class="max-w-xs mx-auto">
+    <p v-show="errorMessage" class="text-center text-primary">{{ errorMessage }}</p>
+
+    <div v-if="isLoading" class="flex justify-center my-10">
+      <span class="loading loading-spinner text-primary"></span>
+    </div>
+    <form v-else @submit="changePassword" class="max-w-xs mx-auto">
       <div class="form-control w-full">
         <label class="label">
           <span class="label-text">New Password:</span>
         </label>
         <input 
-          type="text" 
+          type="password" 
           class="input input-bordered w-full" 
-          v-model="user.userID"
+          v-model="password"
         />
       </div>
       <div class="form-control w-full">
@@ -22,13 +27,13 @@
         <input 
           type="password" 
           class="input input-bordered w-full" 
-          v-model="user.password"
+          v-model="confirmPassword"
         />
       </div>
 
       <div class="flex justify-center mt-5">
         <button class="btn btn-sm bg-primary text-white px-8 text-transform: capitalize !important; hover:bg-primary" @click="dashboard">Back</button>
-        <button class="btn btn-sm bg-primary text-white px-8 text-transform: capitalize !important; hover:bg-primary">Submit</button>
+        <button class="btn btn-sm bg-primary text-white px-8 text-transform: capitalize !important; hover:bg-primary" :disabled="isSubmitButtonDisabled">Submit</button>
       </div>
     </form>
   </div>
@@ -46,23 +51,20 @@
 <script setup>
 import { useRouter } from "vue-router";
 import store from "../store";
-import { onMounted, ref } from 'vue';
+import { ref, watch, computed } from 'vue';
 import TitlePage from "../components/TitlePage.vue";
 import TheNav from "../components/TheNav.vue";
 
-onMounted(() => {
-  console.log('Component is mounted getRfq');
-  // store.dispatch('getActiveBids');
-  store.dispatch('getRfq');
-  // console.log('hehe', store.getters.getRfq)
-});
-
 const isSuccess = ref(false);
 
-const user = ref({
-  userID: '',
-  password: '',
-})
+const isLoading = computed(() => store.getters.loadingStatus)
+
+const password = ref('')
+const confirmPassword = ref('')
+
+const isSubmitButtonDisabled = ref(true)
+
+const errorMessage = ref('')
 
 const router = useRouter();
 
@@ -72,12 +74,44 @@ const dashboard = () => {
   });
 }
 
+watch(password, async (newPassword) => {
+  if (password.value === '' && confirmPassword.value === '') {
+    isSubmitButtonDisabled.value = true;
+    errorMessage.value = ''
+  } else if (confirmPassword.value === newPassword) {
+    isSubmitButtonDisabled.value = false;
+    errorMessage.value = ''
+  } else if (password.value !== '' && confirmPassword.value === '') {
+    isSubmitButtonDisabled.value = true;
+    errorMessage.value = ''
+  } else {
+    errorMessage.value = 'Passwords do not match.'
+    isSubmitButtonDisabled.value = true;
+  }
+})
+
+watch(confirmPassword, async (newConfirmPassword) => {
+  if (password.value === '' && confirmPassword.value === '') {
+    isSubmitButtonDisabled.value = true;
+    errorMessage.value = ''
+  } else if (password.value === newConfirmPassword) {
+    isSubmitButtonDisabled.value = false;
+    errorMessage.value = ''
+  } else if (confirmPassword.value !== '' && password.value === '') {
+    isSubmitButtonDisabled.value = true;
+    errorMessage.value = ''
+  }  else {
+    errorMessage.value = 'Passwords do not match.'
+    isSubmitButtonDisabled.value = true;
+  }
+})
+
 const changePassword = (e) => {
   e.preventDefault();
-  isSuccess.value = true;
+
+  store.dispatch('changePassword', password.value)
+    .then(() => {
+      if (isLoading.value === false) return isSuccess.value = true
+    })
 }
 </script>
-
-<style scoped>
-
-</style>
