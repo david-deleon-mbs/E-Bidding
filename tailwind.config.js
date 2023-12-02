@@ -6,6 +6,11 @@ module.exports = {
   ],
   theme: {
     extend: {},
+    
+    colors: {
+      "custom-template": "#737373",
+      "custom-template-text": "#ffffff",
+    },
   },
   daisyui: {
     themes: [

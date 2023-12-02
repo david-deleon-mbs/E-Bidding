@@ -1,6 +1,11 @@
 import { createStore } from "vuex";
 import axios from "axios";
 
+const credentials = {
+  lid: 'maxadmin',
+  lpwd: 'P@ssw0rd',
+}
+
 export default createStore({
   state: {
     user: {
@@ -22,9 +27,14 @@ export default createStore({
     bidding: [],
     loadingStatus: false,
     isBidSubmitted: false,
+    errorMessage: ''
   },
   mutations: {
     setUser(state, data) {
+      if (data.COMPANIESMboSet.COMPANIES.length === 0) {
+        return state.errorMessage = 'The username or password you entered is incorrect.'
+      }
+
       state.user.token = true;
       state.user.ID = data.COMPANIESMboSet.COMPANIES[0].Attributes.COMPANY.content;
       state.user.companyID = data.COMPANIESMboSet.COMPANIES[0].Attributes.COMPANIESID.content;
@@ -33,22 +43,39 @@ export default createStore({
       localStorage.setItem('vendorID', data.COMPANIESMboSet.COMPANIES[0].Attributes.COMPANY.content);
       localStorage.setItem('companyID', data.COMPANIESMboSet.COMPANIES[0].Attributes.COMPANIESID.content);
       localStorage.setItem('vendorC1EBIDPASS', data.COMPANIESMboSet.COMPANIES[0].Attributes.C1EBIDPASS.content);
+      state.errorMessage = ''
     },
     setCompanyContact(state, data) {
-      state.companyContact.company = data.COMPCONTACTMboSet.COMPCONTACT[0].Attributes.COMPANY.content;
-      state.companyContact.contact = data.COMPCONTACTMboSet.COMPCONTACT[0].Attributes.CONTACT.content;
-      state.companyContact.email = data.COMPCONTACTMboSet.COMPCONTACT[0].Attributes.EMAIL.content;
+      if (data.COMPCONTACTMboSet.COMPCONTACT.length !== 0) {
+        state.companyContact.company = data.COMPCONTACTMboSet.COMPCONTACT[0].Attributes.COMPANY.content;
+        state.companyContact.contact = data.COMPCONTACTMboSet.COMPCONTACT[0].Attributes.CONTACT.content;
+        state.companyContact.email = data.COMPCONTACTMboSet.COMPCONTACT[0].Attributes.EMAIL.content;
+        state.companyContact.position = data.COMPCONTACTMboSet.COMPCONTACT[0].Attributes.POSITION.content;
+        state.companyContact.faxphone = data.COMPCONTACTMboSet.COMPCONTACT[0].Attributes.FAXPHONE.content;
+        state.companyContact.voicephone = data.COMPCONTACTMboSet.COMPCONTACT[0].Attributes.VOICEPHONE.content;
+      }
     },
     setCompanies(state, data) {
-      console.log('data', data)
       state.companies.name = data.COMPANIESMboSet.COMPANIES[0].Attributes.NAME.content;
+      state.companies.address1 = data.COMPANIESMboSet.COMPANIES[0].Attributes.ADDRESS1.content;
+      state.companies.address2 = data.COMPANIESMboSet.COMPANIES[0].Attributes.ADDRESS2.content;
+      state.companies.address3 = data.COMPANIESMboSet.COMPANIES[0].Attributes.ADDRESS3.content;
+      state.companies.address4 = data.COMPANIESMboSet.COMPANIES[0].Attributes.ADDRESS4.content;
+      state.companies.fax = data.COMPANIESMboSet.COMPANIES[0].Attributes.FAX.content;
+      state.companies.phone = data.COMPANIESMboSet.COMPANIES[0].Attributes.PHONE.content;
     },
     setRfq(state, data) {
       state.rfqs = data.RFQMboSet.RFQ;
     },
     setActiveBids(state, data) {
       console.log('setActiveBids data', data)
-      state.activeBids = data.QueryC1EBACTIVEBIDSResponse.C1EBACTIVEBIDSSet.C1EBACTIVEBIDS;
+      if (!data.RFQVENDOR) {
+        return state.activeBids = data.QueryC1EBACTIVEBIDSResponse.C1EBACTIVEBIDSSet.C1EBACTIVEBIDS;
+      }
+      state.activeBids.forEach(activeBid => {
+        if (data.RFQVENDOR.Attributes.RFQNUM.content !== activeBid.Attributes.RFQNUM.content)
+          return activeBid;
+      })
     },
     setQuotations(state, data) {
       console.log('setQuotations data', data)
@@ -116,15 +143,15 @@ export default createStore({
     }
   },
   actions: {
-    async login({ commit }, user) {
-      console.log('user', user.value.userID);
-      return await axios.get(`/maxrest/rest/mbo/COMPANIES?_lid=maxadmin&_lpwd=P@ssw0rd&company=~eq~${user.value.userID}&c1ebidpass=~eq~${user.value.password}`)
+    async login({ commit, state }, user) {
+      return await axios.get(`/maxrest/rest/mbo/COMPANIES?_lid=${credentials.lid}&_lpwd=${credentials.lpwd}&company=~eq~${user.value.userID}&c1ebidpass=~eq~${user.value.password}`)
         .then(({data}) => {
           console.log('response login', data)
           commit('setUser', data);
           return data;
         })
         .catch(error => {
+          state.errorMessage = 'Cannot login at this moment.'
           console.log('error', error)
         })
     },
@@ -133,7 +160,7 @@ export default createStore({
       localStorage.clear();
     },
     async getActiveBids({ commit, state }) {
-      return await axios.get(`/maxrest/rest/os/C1EBACTIVEBIDS/?_lid=maxadmin&_lpwd=P@ssw0rd&vendor=~eq~${state.user.ID}`)
+      return await axios.get(`/maxrest/rest/os/C1EBACTIVEBIDS/?_lid=${credentials.lid}&_lpwd=${credentials.lpwd}&vendor=~eq~${state.user.ID}`)
         .then(({data}) => {
           console.log('response getActiveBids', data)
           commit('setActiveBids', data);
@@ -144,7 +171,7 @@ export default createStore({
         })
     },
     async getDeclineBidOptions({ commit }) {
-      return await axios.get(`/maxrest/rest/mbo/ALNDOMAIN/?_lid=maxadmin&_lpwd=P@ssw0rd&domainid=~eq~C1DECREASON`)
+      return await axios.get(`/maxrest/rest/mbo/ALNDOMAIN/?_lid=${credentials.lid}&_lpwd=${credentials.lpwd}&domainid=~eq~C1DECREASON`)
         .then(({data}) => {
           console.log('response getDeclineBidOptions', data)
           commit('setDeclineBidOptions', data);
@@ -154,9 +181,13 @@ export default createStore({
           console.log('error', error)
         })
     },
-    async declineBid({}, payload) {
-      return await axios.post(`/maxrest/rest/mbo/RFQVENDOR/${payload.value.RFQNumber}?_lid=maxadmin&_lpwd=P@ssw0rd&C1BIDDECLINED=1&C1DECLINEREASON=${payload.value.declineBidReason}`)
+    async declineBid({ commit }, payload) {
+      commit('loadingStatus', true)
+
+      return await axios.post(`/maxrest/rest/mbo/RFQVENDOR/${payload.value.RFQNumber}?_lid=${credentials.lid}&_lpwd=${credentials.lpwd}&C1BIDDECLINED=1&C1DECLINEREASON=${payload.value.declineBidReason}`)
         .then(({data}) => {
+          commit('loadingStatus', false);
+          commit('setActiveBids', data);
           console.log('response declineBid', data)
           return data;
         })
@@ -165,7 +196,7 @@ export default createStore({
         })
     },
     async getQuotations({ commit, state }, rfqNum) {
-      return await axios.get(`/maxrest/rest/os/C1QUOTATIONLINE/?_lid=maxadmin&_lpwd=P@ssw0rd&rfqnum=~eq~${rfqNum}&vendor=~eq~${state.user.ID}`)
+      return await axios.get(`/maxrest/rest/os/C1QUOTATIONLINE/?_lid=${credentials.lid}&_lpwd=${credentials.lpwd}&rfqnum=~eq~${rfqNum}&vendor=~eq~${state.user.ID}`)
         .then(({data}) => {
           console.log('response getQuotations', data)
           commit('setQuotations', data);
@@ -184,7 +215,6 @@ export default createStore({
       return await axios.post(`/maxrest/rest/os/C1QUOTATIONLINE/${payload.value.quotationLineID}?C1VENDORUNITCOST=${payload.value.totalPrice}&C1VENDORCOMPLY=${payload.value.hasCompiled}&MEMO=${payload.value.memo}`)
         .then(({data}) => {
           console.log('response quotationLine', data)
-          // commit('setQuotations', data);
           return data;
         })
         .catch(error => {
@@ -192,7 +222,7 @@ export default createStore({
         })
     },
     async getTechnicalCompliance({ commit, state }, rfqNum) {
-      return await axios.get(`/maxrest/rest/os/C1VENTECHSPECS/?_lid=maxadmin&_lpwd=P@ssw0rd&c1rfqnum=~eq~${rfqNum}&c1vendor=~eq~${state.user.ID}`)
+      return await axios.get(`/maxrest/rest/os/C1VENTECHSPECS/?_lid=${credentials.lid}&_lpwd=${credentials.lpwd}&c1rfqnum=~eq~${rfqNum}&c1vendor=~eq~${state.user.ID}`)
         .then(({data}) => {
           console.log('response technicalCompliance', data)
           commit('setTechnicalCompliances', data);
@@ -210,7 +240,6 @@ export default createStore({
       return await axios.post(`/maxrest/rest/mbo/C1VENTECHSPECS/${payload.value.techSpecsId}?C1COMPLY=${payload.value.hasCompiled}&C1REMARKS=${payload.value.remarks}`)
         .then(({data}) => {
           console.log('response technicalCompliance', data)
-          // commit('setQuotations', data);
           return data;
         })
         .catch(error => {
@@ -218,7 +247,7 @@ export default createStore({
         })
     },
     async getTermsAndCondition({ commit, state }, rfqNum) {
-      return await axios.get(`/maxrest/rest/mbo/RFQVENDORTERM/?_lid=maxadmin&_lpwd=P@ssw0rd&rfqnum=~eq~${rfqNum}&vendor=~eq~${state.user.ID}`)
+      return await axios.get(`/maxrest/rest/mbo/RFQVENDORTERM/?_lid=${credentials.lid}&_lpwd=${credentials.lpwd}&rfqnum=~eq~${rfqNum}&vendor=~eq~${state.user.ID}`)
         .then(({data}) => {
           console.log('response termsAndCondition', data)
           commit('setTermsAndConditions', data);
@@ -236,7 +265,6 @@ export default createStore({
       return await axios.post(`/maxrest/rest/os/C1RFQVENDORTERM/${payload.value.vendorTermId}?&C1VENDORCOMPLY=${payload.value.hasCompiled}&C1VENDORREMARKS=${payload.value.remarks}&siteId=BPI1`)
         .then(({data}) => {
           console.log('response technicalCompliance', data)
-          // commit('setQuotations', data);
           return data;
         })
         .catch(error => {
@@ -244,7 +272,7 @@ export default createStore({
         })
     },
     async getCompanyContact({ state, commit }) {
-      return await axios.get(`/maxrest/rest/mbo/COMPCONTACT?_lid=maxadmin&_lpwd=P@ssw0rd&company=~eq~${state.user.ID}`)
+      return await axios.get(`/maxrest/rest/mbo/COMPCONTACT?_lid=${credentials.lid}&_lpwd=${credentials.lpwd}&company=~eq~${state.user.ID}`)
         .then(({data}) => {
           console.log('response getCompanyContact', data)
           commit('setCompanyContact', data);
@@ -257,7 +285,7 @@ export default createStore({
     async getCompanies({ commit, state }) {
       commit('loadingStatus', true);
 
-      return await axios.get(`/maxrest/rest/mbo/COMPANIES?_lid=maxadmin&_lpwd=P@ssw0rd&company=~eq~${state.user.ID}`)
+      return await axios.get(`/maxrest/rest/mbo/COMPANIES?_lid=${credentials.lid}&_lpwd=${credentials.lpwd}&company=~eq~${state.user.ID}`)
         .then(({data}) => {
           commit('setCompanies', data);
           commit('loadingStatus', false);
@@ -271,33 +299,27 @@ export default createStore({
     async getRfq({ commit, state }) {
       commit('loadingStatus', true);
 
-      return await axios.get(`/maxrest/rest/mbo/RFQ?_lid=maxadmin&_lpwd=P@ssw0rd&company=~eq~${state.user.ID}`)
+      return await axios.get(`/maxrest/rest/mbo/RFQ?_lid=${credentials.lid}&_lpwd=${credentials.lpwd}&company=~eq~${state.user.ID}`)
         .then(({data}) => {
           commit('setRfq', data);
-          // commit('setQuotationsPayload', data);
           commit('loadingStatus', false);
 
           console.log('res getRfq', data.RFQMboSet);
         })
     },
-    // TODO: what is this
     async submitBid({ commit, state }) {
-      return await axios.get(`/maxrest/rest/mbo/RFQ?_lid=maxadmin&_lpwd=P@ssw0rd&company=~eq~${state.user.ID}`)
-        .then(({data}) => {
+      return await axios.get(`/maxrest/rest/mbo/RFQ?_lid=${credentials.lid}&_lpwd=${credentials.lpwd}&company=~eq~${state.user.ID}`)
+        .then(() => {
           commit('submitBid', true);
-
-          console.log('res submitBid', data);
         })
     },
     async changePassword({ commit, state }, payload) {
       commit('loadingStatus', true);
 
-      // TODO: make the lid & lpwd dynamic or stored in env.
-      return await axios.post(`/maxrest/rest/mbo/COMPANIES/${state.user.companyID}?lid=maxadmin&_lpwd=P@ssw0rd&C1EBIDPASS=${payload}`)
+      return await axios.post(`/maxrest/rest/mbo/COMPANIES/${state.user.companyID}?lid=${credentials.lid}&_lpwd=${credentials.lpwd}&C1EBIDPASS=${payload}`)
         .then(({data}) => {
           commit('loadingStatus', false);
           console.log('response changePassword', data)
-          // commit('setQuotations', data);
           return data;
         })
         .catch(error => {

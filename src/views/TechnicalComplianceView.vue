@@ -7,17 +7,17 @@
 
   <div class="overflow-x-auto mx-10">
     <div v-if="isLoading" class="flex justify-center my-10">
-      <span class="loading loading-spinner text-primary"></span>
+      <span class="loading loading-spinner text-custom-template"></span>
     </div>
     <table class="table" v-else-if="technicalCompliances">
-      <thead class="bg-primary text-white">
+      <thead class="bg-custom-template text-custom-template-text">
         <tr>
           <th style="border-right-width: 1px;">Questions / Queries</th>
           <th style="border-right-width: 1px;">Comply?</th>
           <th style="border-right-width: 1px;">Remarks</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody class="text-custom-template">
         <tr class="hover" v-for="technicalCompliance in technicalCompliances" :key="technicalCompliance.Attributes.C1VENTECHSPECSID?.content">
           <th style="border-right-width: 1px;">
             <span>{{ technicalCompliance.Attributes.C1QUESTION?.content }}</span>
@@ -81,8 +81,8 @@
     </table>
 
     <div v-show="!props.readOnly" class="text-center mt-5">
-      <button class="btn btn-sm bg-primary text-white px-8 text-transform: capitalize !important; hover:bg-primary" @click="toQuotations">Back</button>
-      <button class="btn btn-sm bg-primary text-white px-8 text-transform: capitalize !important; hover:bg-primary" @click="toTermsAndConditions">Next</button>
+      <button class="btn btn-sm bg-custom-template text-custom-template-text px-8 text-transform: capitalize !important; hover:bg-custom-template" @click="toQuotations">Back</button>
+      <button class="btn btn-sm bg-custom-template text-custom-template-text px-8 text-transform: capitalize !important; hover:bg-custom-template" @click="toTermsAndConditions">Next</button>
     </div>
   </div>
 </template>

@@ -7,10 +7,10 @@
 
   <div class="overflow-x-auto mx-10">
     <div v-if="isLoading" class="flex justify-center my-10">
-      <span class="loading loading-spinner text-primary"></span>
+      <span class="loading loading-spinner text-custom-template"></span>
     </div>
     <table class="table" v-else-if="quotations">
-      <thead class="bg-primary text-white text-center">
+      <thead class="bg-custom-template text-custom-template-text text-center">
         <tr>
           <th style="border-right-width: 1px;">Item</th>
           <th style="border-right-width: 1px;">Description</th>
@@ -23,12 +23,12 @@
           <th style="border-right-width: 1px;">Qualifications</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody class=" text-custom-template">
         <tr class="hover text-center" v-for="quotation in quotations" :key="quotation.Attributes.ITEMNUM.content">
           <th style="border-right-width: 1px;">
             <span>{{ quotation.Attributes.ITEMNUM?.content }}</span>
           </th>
-          <td style="border-right-width: 1px;">{{ quotation.Attributes.DESCRIPTION?.content }}</td>
+          <td class="text-left" style="border-right-width: 1px;">{{ quotation.Attributes.DESCRIPTION?.content }}</td>
           <td style="border-right-width: 1px;">        
             <template v-if="props.readOnly">
               <div v-if="quotation.Attributes.C1VENDORCOMPLY.content != true">
@@ -64,7 +64,28 @@
           </td>
           <td style="border-right-width: 1px;">{{ quotation.Attributes.ORDERQTY?.content }}</td>
           <td style="border-right-width: 1px;">{{ quotation.Attributes.ORDERUNIT?.content }}</td>
-          <td style="border-right-width: 1px;">{{ quotation.Attributes.CURRENCYCODE?.content }}</td>
+          <td style="border-right-width: 1px;">
+            <select id="countries" class="p-0 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+              <option selected>PHP</option>
+              <option value="USD">USD</option>
+              <option value="EUR">EUR</option>
+              <option value="GBP">GBP</option>
+              <option value="AUD">AUD</option>
+              <option value="JPY">JPY</option>
+              <option value="CAD">CAD</option>
+              <option value="CHF">CHF</option>
+              <option value="HKD">HKD</option>
+              <option value="SGD">SGD</option>
+              <option value="BND">BND</option>
+              <option value="THB">THB</option>
+              <option value="IDR">IDR</option>
+              <option value="SAR">SAR</option>
+              <option value="MYR">MYR</option>
+              <option value="NZD">NZD</option>
+              <option value="BHD">BHD</option>
+              <option value="KRW">KRW</option>
+            </select>
+          </td>
           <td style="border-right-width: 1px;">
             <input 
               v-show="!props.readOnly"
@@ -103,10 +124,17 @@
         </tr>
       </tbody>
     </table>
+    <table class="table" v-else>
+      <thead class="text-black border border-t-2 border-b-2">
+        <tr>
+          <th class="text-center tracking-widest" style="border-right-width: 1px;">No Quotations Found</th>
+        </tr>
+      </thead>
+    </table>
 
     <div v-show="!props.readOnly" class="text-center mt-5">
-      <button class="btn btn-sm bg-primary text-white px-8 text-transform: capitalize !important; hover:bg-primary" @click="toActiveBids">Back</button>
-      <button class="btn btn-sm bg-primary text-white px-8 text-transform: capitalize !important; hover:bg-primary" @click="toTechnicalCompliance">Next</button>
+      <button class="btn btn-sm bg-custom-template text-custom-template-text px-8 text-transform: capitalize !important; hover:bg-custom-template" @click="toActiveBids">Back</button>
+      <button class="btn btn-sm bg-custom-template text-custom-template-text px-8 text-transform: capitalize !important; hover:bg-custom-template" @click="toTechnicalCompliance">Next</button>
     </div>
   </div>
 </template>
