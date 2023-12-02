@@ -11,8 +11,8 @@
     <TermsAndConditionsView :readOnly="true" />
 
     <div class="text-center mt-5">
-      <button class="btn btn-sm bg-primary text-white px-8 text-transform: capitalize !important; hover:bg-primary" @click="toTermsAndConditions">Back</button>
-      <button class="btn btn-sm bg-primary text-white px-8 text-transform: capitalize !important; hover:bg-primary" @click="showTermsAndConditionsDialog = true">Next</button>
+      <button class="btn btn-sm bg-custom-template text-custom-template-text px-8 text-transform: capitalize !important; hover:bg-custom-template" @click="toTermsAndConditions">Back</button>
+      <button class="btn btn-sm bg-custom-template text-custom-template-text px-8 text-transform: capitalize !important; hover:bg-custom-template" @click="showTermsAndConditionsDialog = true">Next</button>
     </div>
   </div>
 
@@ -23,8 +23,8 @@
         <h3 class="font-bold text-lg text-center px-5 -mt-[1px]">I have read and agreed to all terms and conditions.</h3>
       </div>
       <div class="text-center mt-5">
-        <button class="btn btn-sm bg-primary text-white px-8 text-transform: capitalize !important; hover:bg-primary" @click="showTermsAndConditionsDialog = false">Back</button>
-        <button class="btn btn-sm bg-primary text-white px-8 text-transform: capitalize !important; hover:bg-primary" :disabled="!hasAgreeTermsAndCondition" @click="submitBid">Submit</button>
+        <button class="btn btn-sm bg-custom-template text-custom-template-text px-8 text-transform: capitalize !important; hover:bg-custom-template" @click="showTermsAndConditionsDialog = false">Back</button>
+        <button class="btn btn-sm bg-custom-template text-custom-template-text px-8 text-transform: capitalize !important; hover:bg-custom-template" :disabled="!hasAgreeTermsAndCondition" @click="submitBid">Submit</button>
       </div>
     </div>
   </div>
@@ -32,7 +32,7 @@
   <div v-show="isBidSubmitted" class="card card-side h-96 bg-base-100">
     <div class="card-body my-auto">
       <h3 class="font-bold text-lg text-center">Your bid was successfully submitted!</h3>
-      <p class="my-4 text-center text-primary" @click="dashboard">
+      <p class="my-4 text-center text-custom-template" @click="dashboard">
         <span class="cursor-pointer">Go back to Dashboard</span>
       </p>
     </div>

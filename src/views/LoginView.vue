@@ -28,15 +28,17 @@
         />
     </div>
 
+    <p v-show="errorMessage" class="mt-4 text-center text-custom-template text-sm">{{ errorMessage }}</p>
+
     <div>
-      <button type="submit" class="flex mt-5 w-full justify-center rounded-md bg-primary px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">Login</button>
+      <button type="submit" class="flex mt-5 w-full justify-center rounded-md bg-custom-template px-3 py-1.5 text-sm font-semibold leading-6 text-custom-template-text shadow-sm hover:bg-custom-template focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-custom-template">Login</button>
     </div>
   </form>
 </template>
 
 
 <script setup>
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useRouter } from "vue-router";
 import store from "../store";
 
@@ -50,6 +52,8 @@ const user = ref({
   userID: '',
   password: '',
 })
+
+const errorMessage = computed(() => store.state.errorMessage)
 
 function login(e) {
   e.preventDefault();
@@ -67,12 +71,7 @@ function login(e) {
       }
     })
     .catch((error) => {
-      // errorMsg.value = error.response.data.error
       console.log('error', error);
     })
 }
 </script>
-
-<style scoped>
-
-</style>

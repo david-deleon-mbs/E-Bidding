@@ -7,10 +7,10 @@
 
   <div class="overflow-x-auto mx-10">
     <div v-if="isLoading" class="flex justify-center my-10">
-      <span class="loading loading-spinner text-primary"></span>
+      <span class="loading loading-spinner text-custom-template"></span>
     </div>
-    <table class="table" v-else-if="termsAndConditions">
-      <thead class="bg-primary text-white">
+    <table class="table" v-else-if="termsAndConditions.length !== 0">
+      <thead class="bg-custom-template text-custom-template-text">
         <tr>
           <th style="border-right-width: 1px;">Sequence</th>
           <th style="border-right-width: 1px;">Description</th>
@@ -18,7 +18,7 @@
           <th style="border-right-width: 1px;">Remarks</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody class="text-custom-template">
         <tr class="hover" v-for="termsAndCondition in termsAndConditions" :key="termsAndCondition.Attributes.RFQVENDORTERMID.content">
           <th style="border-right-width: 1px;">
             <span>{{ termsAndCondition.Attributes.SEQNUM.content }}</span>
@@ -83,8 +83,8 @@
     </table>
 
     <div v-show="!props.readOnly" class="text-center mt-5">
-      <button class="btn btn-sm bg-primary text-white px-8 text-transform: capitalize !important; hover:bg-primary" @click="toTechnicalCompliance">Back</button>
-      <button class="btn btn-sm bg-primary text-white px-8 text-transform: capitalize !important; hover:bg-primary" @click="toFinalReview">Next</button>
+      <button class="btn btn-sm bg-custom-template text-custom-template-text px-8 text-transform: capitalize !important; hover:bg-custom-template" @click="toTechnicalCompliance">Back</button>
+      <button class="btn btn-sm bg-custom-template text-custom-template-text px-8 text-transform: capitalize !important; hover:bg-custom-template" @click="toFinalReview">Next</button>
     </div>
   </div>
 </template>
@@ -109,7 +109,7 @@ onMounted(() => {
 
 const isLoading = computed(() => store.getters.loadingStatus)
 
-const termsAndConditions = computed(() => store.state.termsAndConditions);
+const termsAndConditions = computed(() => store.state.termsAndConditions.reverse());
 
 console.log('termsAndConditions', termsAndConditions);
 

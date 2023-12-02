@@ -4,10 +4,10 @@
     
     <TitlePage>Change Password</TitlePage>
 
-    <p v-show="errorMessage" class="text-center text-primary">{{ errorMessage }}</p>
+    <p v-show="errorMessage" class="text-center text-custom-template text-sm">{{ errorMessage }}</p>
 
     <div v-if="isLoading" class="flex justify-center my-10">
-      <span class="loading loading-spinner text-primary"></span>
+      <span class="loading loading-spinner text-custom-template"></span>
     </div>
     <form v-else @submit="changePassword" class="max-w-xs mx-auto">
       <div class="form-control w-full">
@@ -32,8 +32,8 @@
       </div>
 
       <div class="flex justify-center mt-5">
-        <button class="btn btn-sm bg-primary text-white px-8 text-transform: capitalize !important; hover:bg-primary" @click="dashboard">Back</button>
-        <button class="btn btn-sm bg-primary text-white px-8 text-transform: capitalize !important; hover:bg-primary" :disabled="isSubmitButtonDisabled">Submit</button>
+        <button class="btn btn-sm bg-custom-template text-custom-template-text px-8 text-transform: capitalize !important; hover:bg-custom-template" @click="dashboard">Back</button>
+        <button class="btn btn-sm bg-custom-template text-custom-template-text px-8 text-transform: capitalize !important; hover:bg-custom-template" :disabled="isSubmitButtonDisabled">Submit</button>
       </div>
     </form>
   </div>
@@ -41,7 +41,7 @@
   <div v-else class="card card-side h-96 bg-base-100 shadow-xl">
     <div class="card-body my-auto">
       <h3 class="font-bold text-lg text-center">Password successfully changed!</h3>
-      <p class="my-4 text-center text-primary" @click="dashboard">
+      <p class="my-4 text-center text-custom-template" @click="dashboard">
         <span class="cursor-pointer">Go back to Dashboard</span>
       </p>
     </div>
